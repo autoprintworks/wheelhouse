@@ -400,9 +400,19 @@ def test_search_wrapper_installs_non_writable_tool():
             dir_mode = stat.S_IMODE(os.stat(tool_dir).st_mode)
             tool_mode = stat.S_IMODE(os.stat(tool).st_mode)
             check("wrapper: install creates only wheelhouse-search", os.listdir(tool_dir) == ["wheelhouse-search"])
-            check("wrapper: installed directory is executable", bool(dir_mode & stat.S_IXUSR))
+            check(
+                "wrapper: installed directory is executable",
+                os.access(tool_dir, os.X_OK)
+                if os.name == "nt"
+                else bool(dir_mode & stat.S_IXUSR),
+            )
             check("wrapper: installed directory is not owner-writable", not bool(dir_mode & stat.S_IWUSR))
-            check("wrapper: installed tool is executable", bool(tool_mode & stat.S_IXUSR))
+            check(
+                "wrapper: installed tool is executable",
+                os.access(tool, os.X_OK)
+                if os.name == "nt"
+                else bool(tool_mode & stat.S_IXUSR),
+            )
             check("wrapper: installed tool is not owner-writable", not bool(tool_mode & stat.S_IWUSR))
             check("wrapper: install adds immutable directory to PATH", read_file(path_file).strip() == tool_dir)
         finally:

@@ -1,191 +1,45 @@
 # wheelhouse.config.yml
 # =============================================================================
-# THE one file you edit to own this machine.
+# AGOS-owned Wheelhouse configuration.
 #
-# Portability note: the OWNER is NOT set here. Every workflow derives the owner
-# from `github.repository_owner` at runtime, so this file works unchanged on any
-# account that forks the repo. List only repo *names*
-# (no "owner/" prefix) - they are resolved under your account/org.
+# Owner is derived from github.repository_owner at workflow runtime.
+# Repo names below are intentionally repo names only, not owner/repo slugs.
 #
-# After editing this file and adding the FLEET_TOKEN secret, your Wheelhouse
-# is live. See README.md for the full setup checklist.
+# This fork starts in a conservative pilot posture:
+# - one AGOS repo only
+# - automatic CI approval disabled
+# - Claude/LLM features disabled
+# - issue scanning disabled until the pilot explicitly enables it
+# - merge thank-you side effects disabled
 # =============================================================================
 
-# The fleet: the repositories you maintain and want triaged.
-# Replace these annotated placeholders with your own repos.
 repos:
-  - name: lavish-axi               # repo name only (resolved under your owner)
-    # Exact name of a required status check that gates "is this PR allowed to
-    # merge". For lavish-axi this is the "raised via no-mistakes" contribution
-    # gate. Set to null if you have no such gate. When set, a PR is never shown
-    # as merge-ready until this check passes.
-    compliance_check: "PR must be raised via no-mistakes"
-    # Substrings that identify your *test* / CI checks. A PR is "tests green"
-    # only when every check whose name contains one of these passes. lavish-axi
-    # runs a `build-and-test (<os>)` matrix across ubuntu/macos/windows.
-    test_check_patterns: ["build-and-test"]
-    # Optional per-repo extras:
-    merge_method: squash           # squash | merge | rebase (default: squash)
-    #                              # used when you approve a "Merge it" decision
-    # auto_approve_ci: false       # optional override of the global setting
-    # auto_triage: false           # optional per-repo opt-out for Claude spend (pr-review)
-    # auto_triage_issues: false    # optional per-repo opt-out for Claude spend (issue-triage)
-    # thank_on_merge: false        # optional per-repo opt-out for the merge thank-you comment
-    # thank_on_merge_message: "Cheers @{author}, this just merged!"  # optional per-repo wording override
-
-  # All repos below share the same contribution gate: the `no-mistakes-required.yml`
-  # workflow runs a job named "PR must be raised via no-mistakes" on every PR to
-  # main, so that exact string is each one's compliance_check. test_check_patterns
-  # below are substrings of each repo's real CI test-job check names (verified
-  # against the live workflows and Actions run history). merge_method is omitted,
-  # so each defaults to squash.
-  - name: gnhf
-    # ci.yml runs a `build-and-test` matrix (ubuntu/macos/windows-latest).
-    compliance_check: "PR must be raised via no-mistakes"
-    test_check_patterns: ["build-and-test"]
-
-  - name: firstmate
-    # ci.yml ("CI") runs Lint shell scripts / Behavior tests / Repo invariants;
-    # "Behavior tests" is the test suite (lint/invariants excluded, mirroring how
-    # no-mistakes excludes its format/vet "check" job).
+  - name: firstmate-gui-agnostic
     compliance_check: "PR must be raised via no-mistakes"
     test_check_patterns: ["Behavior tests"]
+    merge_method: squash
+    auto_approve_ci: false
+    auto_triage: false
+    auto_triage_issues: false
+    thank_on_merge: false
 
-  - name: no-mistakes
-    # ci.yml runs `test` (matrix os) + `e2e` (and a format/vet `check` job we skip).
-    compliance_check: "PR must be raised via no-mistakes"
-    test_check_patterns: ["test (", "e2e"]
-
-  - name: axi
-    # axi-sdk-js-ci.yml runs a `build-and-test` job (path-filtered to the JS SDK).
-    compliance_check: "PR must be raised via no-mistakes"
-    test_check_patterns: ["build-and-test"]
-
-  - name: chrome-devtools-axi
-    # ci.yml runs a single `build-and-test` job.
-    compliance_check: "PR must be raised via no-mistakes"
-    test_check_patterns: ["build-and-test"]
-
-  - name: gh-axi
-    # ci.yml runs a single `build-and-test` job.
-    compliance_check: "PR must be raised via no-mistakes"
-    test_check_patterns: ["build-and-test"]
-
-# Optional GitHub login allowed to drive decisions, in addition to the repo
-# owner. The scheduled scan also treats this login as "your work" and skips
-# cards for PRs/issues it authored. Leave empty to use only the repository owner
-# (github.repository_owner).
+# Optional GitHub login allowed to drive decisions in addition to the repo owner.
+# Leave blank until the captain explicitly names another trusted maintainer.
 maintainer: ""
 
-# Automatic lightweight PR triage. DEFAULT ON when this key is absent.
-# When CLAUDE_CODE_OAUTH_TOKEN is present, each pure needs-decision pr-review
-# card gets one quick advisory triage per PR head SHA.
-# The card gains a Summary, Product implications, and Recommended next step.
-# A brand-new eligible card is first labeled pending-triage and shows no
-# decision checkboxes until that attempt completes or fails open.
-# This never acts and never changes routing; it only gives owner-facing context.
-# Set false to opt out for token-spend control, or override per repo above.
-# Governs pr-review cards ONLY - see `auto_triage_issues` below for issue-triage.
-auto_triage: true
+# Keep all Claude-powered advisory features off for the first AGOS pilot.
+# Wheelhouse #2 and #4 can choose where advisory triage becomes useful.
+auto_triage: false
+auto_triage_issues: false
+nl_decisions: false
 
-# Automatic lightweight issue triage. DEFAULT ON when this key is absent, and
-# INDEPENDENT of `auto_triage` above - toggling one never affects the other.
-# When CLAUDE_CODE_OAUTH_TOKEN is present, each pure needs-decision issue-triage
-# card gets one quick advisory triage per issue `updatedAt` revision (issues have
-# no head SHA, so a new comment or edit is what makes it eligible again).
-# A brand-new eligible issue card is first labeled pending-triage and shows no
-# decision checkboxes until that attempt completes or fails open.
-# It checks out the repo's default branch read-only for a little code context;
-# there is no diff to review. Same Summary / Product implications / Recommended
-# next step shape as PR auto triage; same advisory-only, never-acts guarantee.
-# Set false to opt out for token-spend control, or override per repo above with
-# `auto_triage_issues: false`.
-auto_triage_issues: true
+# Do not let the scheduled scan flood the Wheelhouse fork with FirstMate issue
+# cards before the AGOS issue-state adapter and pilot are ready.
+card_issues: false
 
-# Code-grounded deep review is ALWAYS available (there is no enable flag). Tick
-# the "Investigate" box, or have the repo owner apply the `needs-deep-review`
-# label or run `deep-review` with the card issue number. `deep-review.yml` checks
-# out the target's code read-only, captures Claude's final response, and posts it
-# as the merit/triage verdict. Its only required secret is
-# CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`, a Claude subscription token
-# - NOT an API key); if that secret is absent the workflow posts a one-line
-# "needs token" note on the card instead of silently no-opping. The optional
-# READONLY_TOKEN secret enables scoped read-only search across the target repo
-# and configured fleet repos; without it deep review keeps the legacy no-shell,
-# Read/Grep/Glob-only behavior. All Claude-powered paths use the pinned
-# claude-code-action v1.0.161 commit and pass `--model sonnet` to every Claude
-# step.
+# Never auto-approve fork CI during the initial AGOS setup.
+# A later issue may turn this on per repo after the safety posture is verified.
+auto_approve_ci: false
 
-# Natural-language decisions. Leave false to keep the queue fully deterministic
-# (checkbox + slash-command only). Set true AND add the CLAUDE_CODE_OAUTH_TOKEN
-# secret (a Claude subscription token from `claude setup-token` - NOT an API key)
-# to let the decision handler route a plain-English owner comment on a card
-# through Claude: it MAPS the comment to an action ("merge it" -> merge), answers
-# a question, or asks you to clarify. The optional READONLY_TOKEN secret also
-# enables read-only answer-mode search across the target repo and configured
-# fleet repos. Without it the Claude step keeps the legacy Write-only, no-shell
-# behavior.
-# The LLM only proposes a structured result - the deterministic executor still
-# performs (and guards) any action. Inert until both the flag and the Claude token
-# are present.
-nl_decisions: true
-
-# Whether the scheduled backstop also opens decision cards for open *issues*
-# that have no linked PR (in addition to PRs that need your call). Issues
-# authored by the repo owner, configured maintainer, or bots are skipped by the
-# scan. On, so open issues surface as cards and get advisory auto-triage
-# (`auto_triage_issues` above); tick a card's "Investigate" box any time for a
-# deeper code-grounded read.
-card_issues: true
-
-# Auto-approve provably-safe fork-CI runs at scan time, so only risky or
-# uncertain contributor-authored ones still raise an "approve CI" card for you.
-# Owner, maintainer, and bot-authored fork PRs follow the same safe approve/noop
-# path, but risky or uncertain cases log `suppressed-card` and emit no card.
-# DEFAULT ON (this key is absent -> treated as true), because the same security
-# gate that holds risky runs for the manual path is applied BEFORE
-# auto-approving:
-#   * a PR that changes CI-execution files (.github/workflows, .github/actions,
-#     action.yml/.yaml) is NEVER auto-approved (the pwn-request HOLD), and
-#   * a repo whose base branch runs a `pull_request_target` workflow is never
-#     auto-cleared either - contributor PRs raise a card with a warning, while
-#     excluded-author PRs log `suppressed-card`.
-# Same-repo PRs with no CI signal route to normal review, not CI approval.
-# Unknown fork status fails closed to a manual CI-approval card for contributors
-# or a `suppressed-card` warning for excluded authors.
-# If the approval call verifies no matching run is awaiting approval, scan emits
-# no card and reconcile consumes any stale CI-approval card.
-# Everything uncertain fails closed to a contributor card or excluded-author
-# `suppressed-card`. The scan-backstop log records one notice or warning for
-# every auto-approve path outcome, including no-pending runs, approval failures
-# that route back to a card, and suppressed-card cases.
-# The approval call also verifies each action_required workflow run against the
-# target PR: GitHub-populated pull_requests must name exactly that PR, and
-# fork-originated empty associations must match the PR head SHA plus head branch.
-# Caveat: this gates the fork `pull_request` run only. A `pull_request_target`
-# workflow runs automatically with repo secrets and is NOT gated by any approval,
-# so the posture check is a "don't silently auto-clear + warn me" signal plus a
-# loud flag when such a workflow also checks out the PR head - not a block of
-# that vector. Set to false to opt out for contributor PRs (every contributor
-# fork needs-ci-approval PR -> a card, exactly as before). Excluded-author safe
-# fork PRs still run the safety-gated approve/noop path. You can also override
-# per repo with a `auto_approve_ci: false` key on any entry under `repos:` above.
-auto_approve_ci: true
-
-# Post a short, friendly thank-you comment on a fleet contributor's PR when a
-# decision card merges it (via the "Merge" checkbox or a natural-language
-# "merge it"). The comment @-mentions the contributor by login - this is the
-# one sanctioned contributor @-mention (owner decision cards never @-mention
-# the target's author). DEFAULT ON (this key is absent -> treated as true);
-# set false here, or per-repo with `thank_on_merge: false` above, to merge
-# silently instead. Owner, configured-maintainer, and bot authors are never
-# thanked/@-mentioned. This never affects merge success: a failure to post the
-# comment (or config being off) is swallowed and the merge still succeeds.
-thank_on_merge: true
-
-# Optional custom wording for the thank-you comment above. `{author}` is
-# substituted with the contributor's bare login; include `@{author}` when you
-# want a GitHub mention. Leave unset to use the built-in default ("Thanks
-# @{author} - merged! Really appreciate the contribution.").
-# A per-repo `thank_on_merge_message` (see `repos:` above) overrides this.
-# thank_on_merge_message: "Thanks @{author} - merged! Really appreciate the contribution."
+# Avoid contributor side-effect comments during AGOS setup.
+thank_on_merge: false
