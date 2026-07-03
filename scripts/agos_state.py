@@ -165,20 +165,20 @@ STOW_STATE_TO_STATUS = {
 }
 
 STATUS_TO_PROJECT_STATUS = {
-    "unmanaged": "Unmanaged",
-    "invalid": "Needs repair",
-    "needs-clarity": "Needs clarity",
+    "unmanaged": "Inbox",
+    "invalid": "Inbox",
+    "needs-clarity": "Inbox",
     "ready": "Ready",
-    "in-progress": "In progress",
+    "in-progress": "In Progress",
     "blocked": "Blocked",
-    "needs-captain-decision": "Needs captain decision",
-    "review": "Quality review",
-    "ready-to-merge": "Ready to merge",
+    "needs-captain-decision": "Blocked",
+    "review": "Review",
+    "ready-to-merge": "Review",
     "done": "Done",
-    "stow-candidate": "Stow candidate",
+    "stow-candidate": "Stowed",
     "stowed": "Stowed",
-    "superseded": "Superseded",
-    "closed-not-planned": "Closed not planned",
+    "superseded": "Stowed",
+    "closed-not-planned": "Done",
 }
 
 WORK_STATE_LABELS = {
@@ -206,6 +206,10 @@ PROJECT_FIELD_MAP = {
     "Review lane": "review_lane",
     "Parallelization class": "parallelization_class",
     "Stow state": "stow_state",
+}
+
+PROJECT_FIELD_VALUE_OVERRIDES = {
+    ("Work state", "Needs captain decision"): "Needs founder decision",
 }
 
 
@@ -385,6 +389,7 @@ def project_fields_for_state(
     for project_field, state_field in PROJECT_FIELD_MAP.items():
         value = state.get(state_field)
         if isinstance(value, str):
+            value = PROJECT_FIELD_VALUE_OVERRIDES.get((project_field, value), value)
             projected[project_field] = value
     return projected
 
@@ -462,7 +467,7 @@ def adapt_issue(issue: dict[str, Any]) -> dict[str, Any]:
                 }
             ],
             "state": None,
-            "project_fields": {"Status": STATUS_TO_PROJECT_STATUS["invalid"]},
+            "project_fields": {},
             "expected_labels": [],
         }
 

@@ -70,6 +70,29 @@ class AgosStateTests(unittest.TestCase):
         self.assertEqual(fields["Parallelization class"], "Serial gate")
         self.assertEqual(fields["Stow state"], "Active")
 
+    def test_project_status_projection_uses_live_project_options(self) -> None:
+        issues = by_number()
+
+        self.assertEqual(
+            agos_state.adapt_issue(issues[112])["project_fields"]["Status"],
+            "Stowed",
+        )
+        self.assertEqual(
+            agos_state.adapt_issue(issues[113])["project_fields"]["Status"],
+            "Done",
+        )
+        self.assertEqual(
+            agos_state.adapt_issue(issues[116])["project_fields"]["Status"],
+            "Blocked",
+        )
+        fields = agos_state.project_fields_for_state(
+            {
+                "work_state": "Needs captain decision",
+                "stow_state": "Active",
+            }
+        )
+        self.assertEqual(fields["Work state"], "Needs founder decision")
+
     def test_label_projection_matches_firstmate_families(self) -> None:
         ready = agos_state.adapt_issue(by_number()[120])
         stowed = agos_state.adapt_issue(by_number()[117])

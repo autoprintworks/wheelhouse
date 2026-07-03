@@ -69,8 +69,12 @@ class AgosProjectBridgeTests(unittest.TestCase):
             and action["issue_number"] == 112
         ]
         self.assertTrue(field_changes)
+        self.assertNotIn(
+            "Status",
+            {action["field"] for action in field_changes},
+        )
         self.assertIn(
-            ("Status", "Superseded"),
+            ("Stow state", "Superseded"),
             {(action["field"], action["expected"]) for action in field_changes},
         )
 
@@ -88,14 +92,93 @@ class AgosProjectBridgeTests(unittest.TestCase):
             bridge.PROJECT_SCOPE_REPAIR,
         )
 
-    def test_apply_mode_requires_explicit_confirmation_but_still_refuses_live_mutation(self) -> None:
+    def test_apply_mode_requires_explicit_confirmation(self) -> None:
         with self.assertRaises(bridge.ProjectBridgeError) as missing_confirm:
             bridge.ensure_apply_allowed(apply=True, confirm_project_mutation=False)
         self.assertIn("--confirm-project-mutation", str(missing_confirm.exception))
 
+        bridge.ensure_apply_allowed(apply=True, confirm_project_mutation=True)
+
+    def test_apply_preflight_rejects_missing_options_before_mutation(self) -> None:
+        diagnostics = bridge.preflight_project_actions(
+            project_snapshot={
+                "id": "PVT",
+                "fields": [
+                    {
+                        "id": "field_status",
+                        "name": "Status",
+                        "type": "ProjectV2SingleSelectField",
+                        "options": [{"id": "ready", "name": "Ready"}],
+                    }
+                ],
+            },
+            actions=[
+                {
+                    "action": "set-project-field",
+                    "issue_number": 120,
+                    "item_id": "PVTI_120",
+                    "field": "Status",
+                    "expected": "Missing",
+                }
+            ],
+        )
+
+        self.assertEqual(diagnostics[0]["code"], "missing-project-option")
+
+    def test_apply_project_actions_uses_single_select_option_id(self) -> None:
+        calls = []
+
+        def fake_runner(args):
+            calls.append(args)
+            return subprocess.CompletedProcess(
+                args=args,
+                returncode=0,
+                stdout='{"data":{}}',
+                stderr="",
+            )
+
+        applied = bridge.apply_project_actions(
+            project_snapshot={
+                "id": "PVT",
+                "fields": [
+                    {
+                        "id": "field_status",
+                        "name": "Status",
+                        "type": "ProjectV2SingleSelectField",
+                        "options": [{"id": "ready", "name": "Ready"}],
+                    }
+                ],
+            },
+            actions=[
+                {
+                    "action": "set-project-field",
+                    "issue_number": 120,
+                    "item_id": "PVTI_120",
+                    "field": "Status",
+                    "expected": "Ready",
+                }
+            ],
+            runner=fake_runner,
+        )
+
+        self.assertEqual(applied[0]["field"], "Status")
+        self.assertIn("project=PVT", calls[0])
+        self.assertIn("item=PVTI_120", calls[0])
+        self.assertIn("field=field_status", calls[0])
+        self.assertIn("option=ready", calls[0])
+
+    def test_apply_project_actions_fails_before_unsupported_live_work(self) -> None:
         with self.assertRaises(bridge.ProjectBridgeError) as blocked_live:
-            bridge.ensure_apply_allowed(apply=True, confirm_project_mutation=True)
-        self.assertIn("not implemented", str(blocked_live.exception))
+            bridge.apply_project_actions(
+                project_snapshot={"id": "PVT", "fields": []},
+                actions=[
+                    {
+                        "action": "add-project-item",
+                        "issue_number": 120,
+                    }
+                ],
+            )
+        self.assertIn("preflight failed", str(blocked_live.exception))
 
     def test_graphql_project_snapshot_parser(self) -> None:
         payload = {

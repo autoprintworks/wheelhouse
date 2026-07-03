@@ -152,6 +152,23 @@ fragment ProjectParts on ProjectV2 {
 }
 """
 
+UPDATE_SINGLE_SELECT_FIELD_MUTATION = """
+mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+  updateProjectV2ItemFieldValue(
+    input: {
+      projectId: $project
+      itemId: $item
+      fieldId: $field
+      value: { singleSelectOptionId: $option }
+    }
+  ) {
+    projectV2Item {
+      id
+    }
+  }
+}
+"""
+
 
 class ProjectBridgeError(RuntimeError):
     """Raised when Project bridge input or execution is unsafe."""
@@ -236,6 +253,25 @@ def _items_by_issue(snapshot: dict[str, Any]) -> dict[int, dict[str, Any]]:
         if number is not None:
             items[number] = item
     return items
+
+
+def _fields_by_name(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    fields: dict[str, dict[str, Any]] = {}
+    for field in _as_list(snapshot.get("fields"), "fields"):
+        if isinstance(field, dict) and isinstance(field.get("name"), str):
+            fields[field["name"]] = field
+    return fields
+
+
+def _single_select_option_id(field: dict[str, Any], option_name: Any) -> str | None:
+    if not isinstance(option_name, str):
+        return None
+    for option in field.get("options") or []:
+        if not isinstance(option, dict):
+            continue
+        if option.get("name") == option_name and isinstance(option.get("id"), str):
+            return option["id"]
+    return None
 
 
 def _diagnostic(
@@ -439,6 +475,124 @@ def plan_project_sync(
     }
 
 
+def preflight_project_actions(
+    *,
+    project_snapshot: dict[str, Any],
+    actions: list[dict[str, Any]],
+) -> list[dict[str, str]]:
+    """Validate every planned action before any live Project mutation."""
+
+    diagnostics: list[dict[str, str]] = []
+    if not project_snapshot.get("id"):
+        diagnostics.append(
+            _diagnostic("missing-project-id", "Project snapshot is missing id")
+        )
+    fields = _fields_by_name(project_snapshot)
+    for action in actions:
+        if action.get("action") != "set-project-field":
+            diagnostics.append(
+                _diagnostic(
+                    "unsupported-action",
+                    "apply only supports set-project-field actions",
+                )
+            )
+            continue
+        if not action.get("item_id"):
+            diagnostics.append(
+                _diagnostic(
+                    "missing-item-id",
+                    "cannot set a Project field before the item id is known",
+                )
+            )
+        field_name = action.get("field")
+        field = fields.get(field_name)
+        if not field:
+            diagnostics.append(
+                _diagnostic(
+                    "missing-project-field",
+                    "Project field is missing from snapshot: %s" % field_name,
+                )
+            )
+            continue
+        if field.get("type") != "ProjectV2SingleSelectField":
+            diagnostics.append(
+                _diagnostic(
+                    "unsupported-field-type",
+                    "only ProjectV2 single-select fields are currently applyable",
+                )
+            )
+            continue
+        if not _single_select_option_id(field, action.get("expected")):
+            diagnostics.append(
+                _diagnostic(
+                    "missing-project-option",
+                    "Project field %s has no option %r"
+                    % (field_name, action.get("expected")),
+                )
+            )
+    return diagnostics
+
+
+def apply_project_actions(
+    *,
+    project_snapshot: dict[str, Any],
+    actions: list[dict[str, Any]],
+    runner: GhRunner | None = None,
+) -> list[dict[str, Any]]:
+    """Apply preflighted ProjectV2 single-select field updates."""
+
+    diagnostics = preflight_project_actions(
+        project_snapshot=project_snapshot,
+        actions=actions,
+    )
+    if diagnostics:
+        raise ProjectBridgeError(
+            "Project apply preflight failed: %s"
+            % "; ".join(item["message"] for item in diagnostics)
+        )
+
+    active_runner = runner or _default_gh_runner
+    project_id = str(project_snapshot["id"])
+    fields = _fields_by_name(project_snapshot)
+    applied: list[dict[str, Any]] = []
+    for action in actions:
+        field = fields[str(action["field"])]
+        option_id = _single_select_option_id(field, action.get("expected"))
+        completed = active_runner(
+            [
+                "gh",
+                "api",
+                "graphql",
+                "-f",
+                "query=%s" % UPDATE_SINGLE_SELECT_FIELD_MUTATION,
+                "-F",
+                "project=%s" % project_id,
+                "-F",
+                "item=%s" % action["item_id"],
+                "-F",
+                "field=%s" % field["id"],
+                "-F",
+                "option=%s" % option_id,
+            ]
+        )
+        if completed.returncode != 0:
+            details = (completed.stderr or completed.stdout or "").strip()
+            raise ProjectBridgeError(
+                "Project field update failed for issue #%s field %s: %s"
+                % (action.get("issue_number"), action.get("field"), details)
+            )
+        applied.append(
+            {
+                "action": "set-project-field",
+                "issue_number": action.get("issue_number"),
+                "item_id": action.get("item_id"),
+                "field": action.get("field"),
+                "expected": action.get("expected"),
+            }
+        )
+    return applied
+
+
 def _field_value_name(node: dict[str, Any]) -> tuple[str | None, Any]:
     field = node.get("field")
     field_name = field.get("name") if isinstance(field, dict) else None
@@ -605,9 +759,6 @@ def ensure_apply_allowed(*, apply: bool, confirm_project_mutation: bool) -> None
         raise ProjectBridgeError(
             "apply requires --confirm-project-mutation and captain approval"
         )
-    raise ProjectBridgeError(
-        "live Project mutation is not implemented yet; use dry-run readback"
-    )
 
 
 def _default_readback_file() -> Path:
@@ -646,6 +797,16 @@ def _cmd_plan(args: argparse.Namespace) -> int:
         project_snapshot=project_snapshot,
         repo=args.repo,
     )
+    if args.apply:
+        if readback["project_status"] == "blocked":
+            raise ProjectBridgeError("cannot apply while Project validation is blocked")
+        applied = apply_project_actions(
+            project_snapshot=project_snapshot,
+            actions=readback["planned_actions"],
+        )
+        readback["mode"] = "apply"
+        readback["applied_actions"] = applied
+        readback["applied_action_count"] = len(applied)
     target = Path(args.readback_file) if args.readback_file else _default_readback_file()
     _write_json(target, readback)
     print("mode: %s" % readback["mode"])
@@ -655,6 +816,8 @@ def _cmd_plan(args: argparse.Namespace) -> int:
     print("unmanaged_issues: %s" % len(readback["unmanaged_issues"]))
     print("invalid_issues: %s" % len(readback["invalid_issues"]))
     print("planned_actions: %s" % readback["action_count"])
+    if args.apply:
+        print("applied_actions: %s" % readback["applied_action_count"])
     print("readback_file: %s" % target)
     return 1 if readback["project_status"] == "blocked" else 0
 
