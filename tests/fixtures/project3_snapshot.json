@@ -71,13 +71,12 @@
   "number": 3,
   "owner": "autoprintworks",
   "scope_status": "ok",
-  "title": "FirstMate Execution MVP - Issue to Safe PR",
+  "title": "AGOS Board",
   "views": [
-    "Pipeline Kanban",
-    "Execution Now",
-    "QA and Review",
-    "Model Routing",
-    "Stow and Parked",
-    "AGOS Future"
+    "AGOS Board",
+    "Ready Now",
+    "Blocked & Decisions",
+    "Review & QA",
+    "Parked / Later"
   ]
 }

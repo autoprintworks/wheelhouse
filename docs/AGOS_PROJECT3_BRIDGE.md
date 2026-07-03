@@ -1,7 +1,7 @@
-# AGOS Project 3 Bridge
+# AGOS Board Bridge
 
 Wheelhouse issue #3 starts with a dry-run bridge.
-It compares AGOS issue state against a Project 3 snapshot and writes a bounded JSON readback.
+It compares AGOS issue state against an AGOS Board snapshot and writes a bounded JSON readback.
 
 The bridge does not mutate GitHub yet.
 Apply mode is deliberately guarded by `--confirm-project-mutation` and still refuses live mutation until the ProjectV2 write path is reviewed.
@@ -11,7 +11,7 @@ Apply mode is deliberately guarded by `--confirm-project-mutation` and still ref
 The bridge reads two inputs:
 
 - GitHub issues that may contain hidden `firstmate-state`.
-- A Project 3 snapshot with fields, views, and items.
+- An AGOS Board snapshot with fields, views, and items.
 
 The snapshot can be created later with:
 
@@ -42,16 +42,15 @@ The readback reports:
 - missing Project items.
 - Project field drift.
 
-## Required Project Views
+## Required Board Views
 
 The bridge verifies these views:
 
-- `Pipeline Kanban`
-- `Execution Now`
-- `QA and Review`
-- `Model Routing`
-- `Stow and Parked`
-- `AGOS Future`
+- `AGOS Board`
+- `Ready Now`
+- `Blocked & Decisions`
+- `Review & QA`
+- `Parked / Later`
 
 ## Required Project Fields
 

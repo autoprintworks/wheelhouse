@@ -1,7 +1,7 @@
 # AGOS Issue State Contract
 
 Wheelhouse reads AGOS work from the hidden `firstmate-state` block in a GitHub issue body.
-The block is the canonical machine state for FirstMate execution, labels, and Project 3 projection.
+The block is the canonical machine state for FirstMate execution, labels, and AGOS Board projection.
 
 Wheelhouse keeps its own `wheelhouse-state` block for decision cards.
 That card state should not compete with `firstmate-state`.
@@ -21,9 +21,9 @@ The adapter returns one canonical status for each issue:
 Other FirstMate states are still represented deterministically as `needs-clarity`, `in-progress`, `needs-captain-decision`, `review`, `ready-to-merge`, `stow-candidate`, or `closed-not-planned`.
 Invalid state returns `invalid` and must not be applied to GitHub.
 
-## Project Projection
+## Board Projection
 
-The adapter projects these Project 3 fields:
+The adapter projects these AGOS Board fields:
 
 - `Status`
 - `Pipeline stage`
@@ -55,7 +55,7 @@ This lets Wheelhouse and FirstMate agree on labels without a second IssueOps eng
 
 `fm-issues` remains the temporary FirstMate-side bridge and readback command.
 It should not become a competing long-term Project sync implementation.
-After Wheelhouse issue #3 proves the Project 3 bridge, FirstMate issue #116 should consume that bridge or be superseded by it.
+After Wheelhouse issue #3 proves the AGOS Board bridge, FirstMate issue #116 should consume that bridge or be superseded by it.
 
 ## Fixture Coverage
 

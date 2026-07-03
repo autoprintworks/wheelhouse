@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dry-run AGOS Project 3 bridge for Wheelhouse."""
+"""Dry-run AGOS Board bridge for Wheelhouse."""
 
 from __future__ import annotations
 
@@ -28,12 +28,11 @@ REQUIRED_PROJECT_FIELDS = (
 )
 
 REQUIRED_PROJECT_VIEWS = (
-    "Pipeline Kanban",
-    "Execution Now",
-    "QA and Review",
-    "Model Routing",
-    "Stow and Parked",
-    "AGOS Future",
+    "AGOS Board",
+    "Ready Now",
+    "Blocked & Decisions",
+    "Review & QA",
+    "Parked / Later",
 )
 
 PROJECT_SCOPE_REPAIR = "gh auth refresh -s project"
@@ -368,7 +367,7 @@ def plan_project_sync(
     project_snapshot: dict[str, Any],
     repo: str | None = None,
 ) -> dict[str, Any]:
-    """Plan a Project 3 sync without mutating GitHub."""
+    """Plan an AGOS Board sync without mutating GitHub."""
 
     diagnostics = validate_project_snapshot(project_snapshot)
     field_names = _field_names(project_snapshot)
@@ -430,7 +429,7 @@ def plan_project_sync(
                     "issue_number": number,
                     "content_id": _issue_content_id(issue),
                     "url": _issue_url(issue),
-                    "reason": "managed AGOS issue is missing from Project 3",
+                    "reason": "managed AGOS issue is missing from the AGOS Board",
                 }
             )
             actions.extend(
@@ -823,7 +822,7 @@ def _cmd_plan(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Dry-run AGOS Project 3 sync.")
+    parser = argparse.ArgumentParser(description="Dry-run AGOS Board sync.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     snapshot = subparsers.add_parser("snapshot", help="read ProjectV2 through gh")
@@ -832,7 +831,7 @@ def main(argv: list[str] | None = None) -> int:
     snapshot.add_argument("--out")
     snapshot.set_defaults(func=_cmd_snapshot)
 
-    plan = subparsers.add_parser("plan", help="plan Project 3 sync from snapshots")
+    plan = subparsers.add_parser("plan", help="plan AGOS Board sync from snapshots")
     plan.add_argument("--issues-file", required=True)
     plan.add_argument("--project-file", required=True)
     plan.add_argument("--readback-file")

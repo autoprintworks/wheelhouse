@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the AGOS Project 3 bridge without GitHub access."""
+"""Exercise the AGOS Board bridge without GitHub access."""
 
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ class AgosProjectBridgeTests(unittest.TestCase):
 
         broken = dict(snapshot)
         broken["fields"] = ["Status"]
-        broken["views"] = ["Pipeline Kanban"]
+        broken["views"] = ["AGOS Board"]
         codes = {
             diagnostic["code"]
             for diagnostic in bridge.validate_project_snapshot(broken)
@@ -186,7 +186,7 @@ class AgosProjectBridgeTests(unittest.TestCase):
                 "repositoryOwner": {
                     "projectV2": {
                         "id": "PVT_live",
-                        "title": "FirstMate Execution MVP - Issue to Safe PR",
+                        "title": "AGOS Board",
                         "fields": {
                             "nodes": [
                                 {
@@ -198,7 +198,7 @@ class AgosProjectBridgeTests(unittest.TestCase):
                                 }
                             ]
                         },
-                        "views": {"nodes": [{"id": "view", "name": "Pipeline Kanban"}]},
+                        "views": {"nodes": [{"id": "view", "name": "AGOS Board"}]},
                         "items": {
                             "nodes": [
                                 {
