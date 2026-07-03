@@ -565,13 +565,13 @@ def apply_project_actions(
                 "graphql",
                 "-f",
                 "query=%s" % UPDATE_SINGLE_SELECT_FIELD_MUTATION,
-                "-F",
+                "-f",
                 "project=%s" % project_id,
-                "-F",
+                "-f",
                 "item=%s" % action["item_id"],
-                "-F",
+                "-f",
                 "field=%s" % field["id"],
-                "-F",
+                "-f",
                 "option=%s" % option_id,
             ]
         )
