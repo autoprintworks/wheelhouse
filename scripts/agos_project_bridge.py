@@ -28,11 +28,12 @@ REQUIRED_PROJECT_FIELDS = (
 )
 
 REQUIRED_PROJECT_VIEWS = (
-    "AGOS Board",
-    "Ready Now",
-    "Blocked & Decisions",
-    "Review & QA",
-    "Parked / Later",
+    "Captain Decisions",
+    "Ready For Agent",
+    "Active Execution",
+    "Review And Merge",
+    "Blocked Work",
+    "Stow And Future",
 )
 
 PROJECT_SCOPE_REPAIR = "gh auth refresh -s project"

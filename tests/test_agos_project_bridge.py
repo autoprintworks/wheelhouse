@@ -35,7 +35,7 @@ class AgosProjectBridgeTests(unittest.TestCase):
 
         broken = dict(snapshot)
         broken["fields"] = ["Status"]
-        broken["views"] = ["AGOS Board"]
+        broken["views"] = ["Ready For Agent"]
         codes = {
             diagnostic["code"]
             for diagnostic in bridge.validate_project_snapshot(broken)
@@ -198,7 +198,7 @@ class AgosProjectBridgeTests(unittest.TestCase):
                                 }
                             ]
                         },
-                        "views": {"nodes": [{"id": "view", "name": "AGOS Board"}]},
+                        "views": {"nodes": [{"id": "view", "name": "Ready For Agent"}]},
                         "items": {
                             "nodes": [
                                 {

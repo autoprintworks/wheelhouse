@@ -46,11 +46,12 @@ The readback reports:
 
 The bridge verifies these views:
 
-- `AGOS Board`
-- `Ready Now`
-- `Blocked & Decisions`
-- `Review & QA`
-- `Parked / Later`
+- `Captain Decisions`
+- `Ready For Agent`
+- `Active Execution`
+- `Review And Merge`
+- `Blocked Work`
+- `Stow And Future`
 
 ## Required Project Fields
 
