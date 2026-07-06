@@ -5,9 +5,9 @@
 # Owner is derived from github.repository_owner at workflow runtime.
 # Repo names below are intentionally repo names only, not owner/repo slugs.
 #
-# This fork starts in a conservative pilot posture:
-# - one AGOS repo only
-# - automatic CI approval disabled
+# This fork starts in a conservative AGOS pilot posture:
+# - current pilot watches only firstmate-gui-agnostic
+# - acting paths stay conservative: automatic CI approval disabled
 # - Claude/LLM features disabled
 # - issue scanning disabled until the pilot explicitly enables it
 # - merge thank-you side effects disabled
