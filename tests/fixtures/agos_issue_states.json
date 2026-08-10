@@ -1,0 +1,56 @@
+[
+  {
+    "number": 85,
+    "title": "Loose backlog issue without managed state",
+    "body": "## Purpose\n\nThis issue predates the AGOS IssueOps contract.\n",
+    "labels": [
+      "needs-triage"
+    ]
+  },
+  {
+    "number": 112,
+    "title": "Superseded planning issue",
+    "body": "## Purpose\n\nThis issue was replaced by the canonical AGOS plan.\n\n<!-- firstmate-state:\n{\n  \"dependency_state\": \"Unblocked\",\n  \"issue_number\": 112,\n  \"parallelization_class\": \"Serial gate\",\n  \"pipeline_stage\": \"Stow\",\n  \"priority\": \"Park for later\",\n  \"product_outcome\": \"Planning system\",\n  \"replacement_issues\": [\n    120\n  ],\n  \"repo\": \"autoprintworks/firstmate-gui-agnostic\",\n  \"review_lane\": \"Human decision\",\n  \"schema_version\": 1,\n  \"source_issues\": [],\n  \"state_revision\": \"fixture-2026-07-03\",\n  \"stow_state\": \"Superseded\",\n  \"target_model_tier\": \"Strong planning\",\n  \"work_state\": \"Superseded\"\n}\n-->\n",
+    "labels": [
+      "stow:superseded",
+      "work state:superseded"
+    ]
+  },
+  {
+    "number": 116,
+    "title": "Make Project and Kanban sync automatic",
+    "body": "## Purpose\n\nBuild the automatic board sync path.\n\n<!-- firstmate-state:\n{\n  \"dependency_state\": \"Blocked\",\n  \"issue_number\": 116,\n  \"parallelization_class\": \"Serial gate\",\n  \"pipeline_stage\": \"Kanban Board\",\n  \"priority\": \"Do now\",\n  \"product_outcome\": \"Kanban sync\",\n  \"replacement_issues\": [],\n  \"repo\": \"autoprintworks/firstmate-gui-agnostic\",\n  \"review_lane\": \"Separate QA\",\n  \"schema_version\": 1,\n  \"source_issues\": [\n    120\n  ],\n  \"state_revision\": \"fixture-2026-07-03\",\n  \"stow_state\": \"Active\",\n  \"target_model_tier\": \"Deterministic tooling\",\n  \"work_state\": \"Blocked\"\n}\n-->\n",
+    "labels": [
+      "pipeline:kanban-board",
+      "priority:do now",
+      "work state:blocked"
+    ]
+  },
+  {
+    "number": 117,
+    "title": "Park future AGOS scale-up ideas",
+    "body": "## Purpose\n\nPreserve useful future work outside the active board.\n\n<!-- firstmate-state:\n{\n  \"dependency_state\": \"Unblocked\",\n  \"issue_number\": 117,\n  \"parallelization_class\": \"Can run in parallel\",\n  \"pipeline_stage\": \"Stow\",\n  \"priority\": \"Park for later\",\n  \"product_outcome\": \"Future scale-ups\",\n  \"replacement_issues\": [],\n  \"repo\": \"autoprintworks/firstmate-gui-agnostic\",\n  \"review_lane\": \"None\",\n  \"schema_version\": 1,\n  \"source_issues\": [],\n  \"state_revision\": \"fixture-2026-07-03\",\n  \"stow_state\": \"Stowed\",\n  \"target_model_tier\": \"Strong planning\",\n  \"work_state\": \"Stowed\"\n}\n-->\n",
+    "labels": [
+      "stow:stowed",
+      "work state:stowed"
+    ]
+  },
+  {
+    "number": 120,
+    "title": "Canonical AGOS execution plan",
+    "body": "## Purpose\n\nMake the full AGOS execution plan agent-readable.\n\n<!-- firstmate-state:\n{\n  \"current_pr\": null,\n  \"dependency_state\": \"Unblocked\",\n  \"execution_task_id\": null,\n  \"issue_number\": 120,\n  \"last_reconciled_at\": \"2026-07-03T13:30:55Z\",\n  \"parallelization_class\": \"Serial gate\",\n  \"pipeline_stage\": \"Kanban Board\",\n  \"priority\": \"Do now\",\n  \"product_outcome\": \"Planning system\",\n  \"project_item_id\": null,\n  \"project_number\": 3,\n  \"replacement_issues\": [],\n  \"repo\": \"autoprintworks/firstmate-gui-agnostic\",\n  \"review_lane\": \"Human decision\",\n  \"schema_version\": 1,\n  \"source_issues\": [\n    116\n  ],\n  \"state_revision\": \"issueops-v1-2026-07-03\",\n  \"stow_state\": \"Active\",\n  \"target_model_tier\": \"Strong planning\",\n  \"work_state\": \"Ready to start\"\n}\n-->\n",
+    "labels": [
+      "pipeline:kanban-board",
+      "priority:do now",
+      "ready-for-agent"
+    ]
+  },
+  {
+    "number": 113,
+    "title": "Completed Project readback proof",
+    "body": "## Purpose\n\nRecord the completed board proof.\n\n<!-- firstmate-state:\n{\n  \"dependency_state\": \"Unblocked\",\n  \"issue_number\": 113,\n  \"parallelization_class\": \"Batch proof\",\n  \"pipeline_stage\": \"QA\",\n  \"priority\": \"Do next\",\n  \"product_outcome\": \"Kanban sync\",\n  \"replacement_issues\": [],\n  \"repo\": \"autoprintworks/firstmate-gui-agnostic\",\n  \"review_lane\": \"No-mistakes\",\n  \"schema_version\": 1,\n  \"source_issues\": [],\n  \"state_revision\": \"fixture-2026-07-03\",\n  \"stow_state\": \"Active\",\n  \"target_model_tier\": \"Deterministic tooling\",\n  \"work_state\": \"Done\"\n}\n-->\n",
+    "labels": [
+      "work state:done"
+    ]
+  }
+]

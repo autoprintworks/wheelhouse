@@ -1,0 +1,83 @@
+{
+  "fields": [
+    "Status",
+    "Pipeline stage",
+    "Priority",
+    "Product outcome",
+    "Work state",
+    "Dependency state",
+    "Target model tier",
+    "Review lane",
+    "Parallelization class",
+    "Stow state"
+  ],
+  "id": "PVT_fixture",
+  "items": [
+    {
+      "fields": {
+        "Dependency state": "Unblocked",
+        "Parallelization class": "Serial gate",
+        "Pipeline stage": "Kanban Board",
+        "Priority": "Do now",
+        "Product outcome": "Planning system",
+        "Review lane": "Human decision",
+        "Status": "Ready",
+        "Stow state": "Active",
+        "Target model tier": "Strong planning",
+        "Work state": "Ready to start"
+      },
+      "id": "PVTI_120",
+      "issue_number": 120,
+      "repo": "autoprintworks/firstmate-gui-agnostic",
+      "url": "https://github.com/autoprintworks/firstmate-gui-agnostic/issues/120"
+    },
+    {
+      "fields": {
+        "Dependency state": "Unblocked",
+        "Parallelization class": "Serial gate",
+        "Pipeline stage": "Stow",
+        "Priority": "Park for later",
+        "Product outcome": "Planning system",
+        "Review lane": "Human decision",
+        "Status": "Stowed",
+        "Stow state": "Stowed",
+        "Target model tier": "Strong planning",
+        "Work state": "Stowed"
+      },
+      "id": "PVTI_112",
+      "issue_number": 112,
+      "repo": "autoprintworks/firstmate-gui-agnostic",
+      "url": "https://github.com/autoprintworks/firstmate-gui-agnostic/issues/112"
+    },
+    {
+      "fields": {
+        "Dependency state": "Unblocked",
+        "Parallelization class": "Can run in parallel",
+        "Pipeline stage": "Stow",
+        "Priority": "Park for later",
+        "Product outcome": "Future scale-ups",
+        "Review lane": "None",
+        "Status": "Stowed",
+        "Stow state": "Stowed",
+        "Target model tier": "Strong planning",
+        "Work state": "Stowed"
+      },
+      "id": "PVTI_117",
+      "issue_number": 117,
+      "repo": "autoprintworks/firstmate-gui-agnostic",
+      "url": "https://github.com/autoprintworks/firstmate-gui-agnostic/issues/117"
+    }
+  ],
+  "number": 3,
+  "owner": "autoprintworks",
+  "scope_status": "ok",
+  "title": "AGOS Board",
+  "views": [
+    "Captain Decisions",
+    "Ready For Agent",
+    "Active Execution",
+    "Review And Merge",
+    "Blocked Work",
+    "Stow And Future"
+  ]
+}
