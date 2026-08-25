@@ -3,8 +3,9 @@
 Wheelhouse issue #3 starts with a dry-run bridge.
 It compares AGOS issue state against an AGOS Board snapshot and writes a bounded JSON readback.
 
-The bridge does not mutate GitHub yet.
-Apply mode is deliberately guarded by `--confirm-project-mutation` and still refuses live mutation until the ProjectV2 write path is reviewed.
+The bridge runs as a dry run by default and mutates nothing unless both `--apply` and `--confirm-project-mutation` are passed.
+With both flags present it performs live ProjectV2 writes, issuing a real `updateProjectV2ItemFieldValue` mutation for each planned action.
+Apply still refuses to run while Project validation is blocked, and preflight limits it to `set-project-field` actions on single-select fields, so it never adds a Project item.
 
 ## Inputs
 
