@@ -1,5 +1,9 @@
 # AGOS Issue State Contract
 
+Scope note: this document describes the autoprintworks deployment it came from, not this fork.
+No card path in this repository reads the `firstmate-state` block: `scripts/agos_state.py` is imported only by `scripts/agos_project_bridge.py` and `tests/test_agos_state.py`, and neither `scripts/reconcile.py` nor `scripts/render_card.py` consults it.
+The Wheelhouse behavior described below is therefore not live here.
+
 Wheelhouse reads AGOS work from the hidden `firstmate-state` block in a GitHub issue body.
 The block is the canonical machine state for FirstMate execution, labels, and AGOS Board projection.
 
