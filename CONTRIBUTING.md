@@ -101,6 +101,8 @@ python tests/test_public_clone_e2e.py
 python tests/test_workflow_lint.py
 python tests/test_scan_reliability.py
 python tests/test_config_schema.py
+python tests/test_agos_state.py
+python tests/test_agos_project_bridge.py
 python - <<'PY'
 from pathlib import Path
 import yaml

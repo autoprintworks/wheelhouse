@@ -1,5 +1,9 @@
 # AGOS Wheelhouse Setup
 
+Scope note: this document describes the autoprintworks deployment it came from, not this fork.
+The committed `wheelhouse.config.yml` in this repository is authoritative here.
+The fleet contents and feature-flag assertions below do not describe this fork's configuration.
+
 This fork is the GitHub IssueOps control layer for AGOS and FirstMate.
 It is intentionally configured for a conservative first pilot.
 
