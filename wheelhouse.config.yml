@@ -171,13 +171,6 @@ repos:
     compliance_check: null
     test_check_patterns: ["validate"]
 
-  - name: comment-repl.nvim
-    # No no-mistakes gate. lint_test.yml runs a `test` matrix (nvim stable/
-    # nightly) plus a `stylua` lint job (lint excluded from the test signal). No
-    # Actions run history yet; check names read from the workflow file.
-    compliance_check: null
-    test_check_patterns: ["test"]
-
   # -- These have no CI test or gate workflows. No compliance gate and no test
   #    checks exist, so both are left null/empty; such a repo's PRs simply
   #    surface for review without a tests-green signal.
