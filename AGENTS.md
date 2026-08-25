@@ -34,8 +34,8 @@ still appears where it's plain English, e.g. "triage the queue".)
   Two known upstream defects in them are intentionally left unfixed and are to be reported upstream rather than patched here.
   `replace_firstmate_state_block` passes a rendered JSON block as the replacement argument of `STATE_BLOCK_RE.sub`, so it is interpreted as a regex replacement template, which crashes on non-ASCII values and silently corrupts values containing tabs, newlines, or backslashes.
   `PROJECT_QUERY` reads ProjectV2 items with `items(first: 100)` and no cursor loop while still reporting `scope_status` ok, so a Project with more than 100 items yields a wrong plan.
-  `docs/AGOS_SETUP.md` and `docs/AGOS_PROJECT3_BRIDGE.md` carry minimal correction notes and are the only deliberate divergence from upstream in the merged AGOS surface.
-  Every other merged AGOS file, including `docs/AGOS_STATE.md`, its tests, and its fixtures, is upstream-identical.
+  `docs/AGOS_SETUP.md`, `docs/AGOS_PROJECT3_BRIDGE.md`, and `docs/AGOS_STATE.md` carry minimal correction or fork-scope notes and are the only deliberate divergence from upstream in the merged AGOS surface.
+  Every other merged AGOS file, including both scripts, both tests, and both fixtures, is byte-identical to upstream `b63123e`.
 
 ## Architecture
 
