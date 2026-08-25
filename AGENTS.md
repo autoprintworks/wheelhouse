@@ -28,6 +28,13 @@ still appears where it's plain English, e.g. "triage the queue".)
   the manual gate**: it shares the one `ci_safety` verdict and approves only what
   is provably safe (no risky files AND no `pull_request_target` posture, all reads
   fail closed), so it can never auto-clear anything the manual path would HOLD.
+- **Upstream-verbatim AGOS bridge.**
+  `scripts/agos_state.py` and `scripts/agos_project_bridge.py` are merged verbatim from upstream `autoprintworks/wheelhouse` and must stay byte-identical to it.
+  This is deliberate: the code is inert for this fork's fleet, and keeping those two files identical is what keeps future upstream syncs conflict-free.
+  Two known upstream defects in them are intentionally left unfixed and are to be reported upstream rather than patched here.
+  `replace_firstmate_state_block` passes a rendered JSON block as the replacement argument of `STATE_BLOCK_RE.sub`, so it is interpreted as a regex replacement template, which crashes on non-ASCII values and silently corrupts values containing tabs, newlines, or backslashes.
+  `PROJECT_QUERY` reads ProjectV2 items with `items(first: 100)` and no cursor loop while still reporting `scope_status` ok, so a Project with more than 100 items yields a wrong plan.
+  `docs/AGOS_SETUP.md` and `docs/AGOS_PROJECT3_BRIDGE.md` carry minimal correction notes and are the deliberate exception to that byte-identical rule.
 
 ## Architecture
 
