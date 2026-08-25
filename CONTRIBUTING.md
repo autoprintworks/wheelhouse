@@ -37,6 +37,7 @@ If GitHub shows **Allow edits and access to secrets by maintainers**, read GitHu
 ## Local validation
 
 There is no build step.
+These checks need PyYAML, which is pinned in `requirements-dev.txt` (`python -m pip install -r requirements-dev.txt`); `ruff` and the optional `actionlint` are separate tools you install yourself.
 Before pushing, validate locally:
 
 ```
